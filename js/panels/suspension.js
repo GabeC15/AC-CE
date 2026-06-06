@@ -4,7 +4,7 @@
 import { h, clear } from '../ui/dom.js';
 import { card, boundNumber } from '../ui/controls.js';
 import { buildSuspensionDiagram } from '../ui/suspensiondiagram.js';
-import { buildLinkage } from '../ui/suspensionlinkage.js';
+import { buildLinkage, casterKpi } from '../ui/suspensionlinkage.js';
 
 export function renderSuspension(car, ctx) {
   const ini = car.ini('suspensions.ini');
@@ -13,8 +13,19 @@ export function renderSuspension(car, ctx) {
       h('section', { class: 'card' }, h('p', { class: 'subtle' }, 'No suspensions.ini found for this car.')));
   }
 
+  const tyres = car.ini('tyres.ini');
   const diagramHost = h('div', { class: 'susp-diagram' });
-  const refresh = () => { clear(diagramHost); diagramHost.append(buildSuspensionDiagram(readGeom(ini))); };
+  const refresh = () => {
+    const geom = readGeom(ini);
+    const fa = readAxleGeom(ini, tyres, 'FRONT');
+    const ra = readAxleGeom(ini, tyres, 'REAR');
+    geom.frontCaster = fa ? casterKpi(fa.pts, fa.type).caster : null;
+    geom.rearCaster = ra ? casterKpi(ra.pts, ra.type).caster : null;
+    if (fa) { geom.frontRadius = fa.wheelRadius; geom.frontWidth = fa.wheelWidth; }
+    if (ra) { geom.rearRadius = ra.wheelRadius; geom.rearWidth = ra.wheelWidth; }
+    clear(diagramHost);
+    diagramHost.append(buildSuspensionDiagram(geom));
+  };
 
   // Wrapped ctx: geometry edits also redraw the diagram.
   const gctx = { markChanged() { ctx.markChanged(); refresh(); } };
@@ -61,7 +72,6 @@ export function renderSuspension(car, ctx) {
   refresh();
 
   // --- linkage / hardpoints diagram with Front/Rear toggle ------------------
-  const tyres = car.ini('tyres.ini');
   const linkHost = h('div', { class: 'linkage-host' });
   let axle = 'FRONT';
   const renderLink = () => {
@@ -109,6 +119,7 @@ function readAxleGeom(ini, tyres, axle) {
     rodLength: ini.has(axle, 'ROD_LENGTH') ? ini.getNumber(axle, 'ROD_LENGTH') : null,
     camber: ini.getNumber(axle, 'STATIC_CAMBER') || 0,
     wheelRadius: tyres && tyres.has(axle, 'RADIUS') ? tyres.getNumber(axle, 'RADIUS') : 0.3,
+    wheelWidth: tyres && tyres.has(axle, 'WIDTH') ? tyres.getNumber(axle, 'WIDTH') : 0.2,
     pts: {
       topF: pt('WBCAR_TOP_FRONT'), topR: pt('WBCAR_TOP_REAR'),
       botF: pt('WBCAR_BOTTOM_FRONT'), botR: pt('WBCAR_BOTTOM_REAR'),

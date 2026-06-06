@@ -7,6 +7,7 @@ import { renderPhysics } from './panels/physics.js';
 import { renderSuspension } from './panels/suspension.js';
 import { renderTyres } from './panels/tyres.js';
 import { renderAero } from './panels/aero.js';
+import { renderElectronics } from './panels/electronics.js';
 import { renderUiInfo } from './panels/uiinfo.js';
 import { renderSkins } from './panels/skins.js';
 import { renderRawFiles } from './panels/rawfiles.js';
@@ -16,7 +17,8 @@ const TABS = [
   { id: 'physics', label: 'Physics', render: renderPhysics },
   { id: 'suspension', label: 'Suspension', render: renderSuspension },
   { id: 'tyres', label: 'Tyres', render: renderTyres },
-  { id: 'aero', label: 'Aero & Elec', render: renderAero },
+  { id: 'aero', label: 'Aero', render: renderAero },
+  { id: 'electronics', label: 'Electronics', render: renderElectronics },
   { id: 'uiinfo', label: 'UI Info', render: renderUiInfo },
   { id: 'skins', label: 'Skins', render: renderSkins },
   { id: 'raw', label: 'Raw Files', render: renderRawFiles },
@@ -92,6 +94,7 @@ function selectTab(id) {
   state.tab = id;
   renderTabs();
   const content = clear(byId('content'));
+  content.scrollTop = 0; // start each tab at the top
   if (!state.car) { content.append(emptyState()); return; }
   const tab = TABS.find((t) => t.id === id);
   try {

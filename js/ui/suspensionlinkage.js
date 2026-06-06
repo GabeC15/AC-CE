@@ -25,14 +25,23 @@ const f1 = (n) => (Math.round(n * 10) / 10).toFixed(1);
  * @param {object} g axle geometry from the panel (see readAxleGeom)
  * @returns {HTMLElement}
  */
+/** Caster & kingpin inclination (deg) from the steering axis (lower ball joint -> upper pivot). */
+export function casterKpi(pts, type) {
+  const lower = pts.tyreBot;
+  const upper = type === 'STRUT' ? pts.strutCar : pts.tyreTop;
+  if (!lower || !upper) return { caster: null, kpi: null, lower, upper };
+  return {
+    lower, upper,
+    caster: Math.atan2(lower.z - upper.z, upper.y - lower.y) * DEG,
+    kpi: Math.atan2(upper.x - lower.x, upper.y - lower.y) * DEG,
+  };
+}
+
 export function buildLinkage(g) {
   const p = g.pts;
   const segs = [];          // [a, b, isAxis]
   const marks = [];         // labelled points
   const add = (pt) => pt && marks.push(pt);
-
-  let lower = p.tyreBot;
-  let upper = g.type === 'STRUT' ? p.strutCar : p.tyreTop;
 
   if (g.type === 'STRUT') {
     pushSeg(segs, p.strutCar, p.strutTyre);
@@ -47,21 +56,17 @@ export function buildLinkage(g) {
     [p.topF, p.topR, p.botF, p.botR, p.tyreTop, p.tyreBot].forEach(add);
   }
 
-  let caster = null, kpi = null;
-  if (lower && upper) {
-    segs.push([lower, upper, true]);
-    caster = Math.atan2(lower.z - upper.z, upper.y - lower.y) * DEG;
-    kpi = Math.atan2(upper.x - lower.x, upper.y - lower.y) * DEG;
-  }
+  const { kpi, lower, upper } = casterKpi(p, g.type);
+  if (lower && upper) segs.push([lower, upper, true]);
 
   const allPts = segs.flatMap(([a, b]) => [a, b]);
   const frontView = buildView(allPts, segs, marks, g, 'x', 'y', { wheel: 'rect', label: kpi != null ? `KPI ${f1(kpi)}°` : '' });
-  const sideView = buildView(allPts, segs, marks, g, 'z', 'y', { wheel: 'circle', label: caster != null ? `Caster ${f1(caster)}°` : '', dir: 'front →' });
+  const topView = buildView(allPts, segs, marks, g, 'x', 'z', { wheel: 'top', dir: 'front ↑' });
+  const sideView = buildView(allPts, segs, marks, g, 'z', 'y', { wheel: 'circle', dir: 'front →' });
 
   const readout = (k, v) => h2('div', 'link-stat', h2('span', 'link-stat-k', k), h2('span', 'link-stat-v', v));
   const stats = h2('div', 'link-stats',
     readout('Type', g.type),
-    caster != null ? readout('Caster', `${f1(caster)}°`) : null,
     kpi != null ? readout('KPI', `${f1(kpi)}°`) : null,
     g.rodLength != null ? readout('Rod length', `${g.rodLength} m`) : null,
     readout('Wheel Ø', `${(g.wheelRadius * 2).toFixed(2)} m`));
@@ -69,9 +74,10 @@ export function buildLinkage(g) {
   return h2('div', 'linkage',
     h2('div', 'linkage-views',
       labelled('Front view', frontView),
+      labelled('Top view', topView),
       labelled('Side view', sideView)),
     stats,
-    h2('div', 'subtle small', 'Pickup points read straight from suspensions.ini. Heights are vs wheel centre; actual ride height is derived in-sim from springs, mass and rod length.'));
+    h2('div', 'subtle small', 'Pickup points read straight from suspensions.ini. Heights are vs wheel centre; actual ride height is derived in-sim from springs, mass and rod length. Caster is on the Geometry reference.'));
 }
 
 function buildView(allPts, segs, marks, g, hk, vk, opts) {
@@ -93,14 +99,18 @@ function buildView(allPts, segs, marks, g, hk, vk, opts) {
 
   const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'linkage-svg', preserveAspectRatio: 'xMidYMid meet' });
 
-  // ground
-  svg.append(s('line', { x1: 6, y1: yRaw(-r), x2: W - 6, y2: yRaw(-r), class: 'link-ground' }));
+  // ground (only meaningful when the vertical axis is height)
+  if (vk === 'y') svg.append(s('line', { x1: 6, y1: yRaw(-r), x2: W - 6, y2: yRaw(-r), class: 'link-ground' }));
 
   // wheel at the corner reference (h = 0)
   const cx = xRaw(0), cy = yRaw(0);
   if (opts.wheel === 'circle') {
     svg.append(s('circle', { cx, cy, r: r * scale, class: 'link-wheel' }));
     svg.append(s('circle', { cx, cy, r: r * scale * 0.45, class: 'link-wheel-rim' }));
+  } else if (opts.wheel === 'top') {
+    // tyre footprint seen from above: tread width (x) by contact length (z)
+    const wPx = 0.20 * scale, lPx = 0.30 * scale;
+    svg.append(s('rect', { x: cx - wPx / 2, y: cy - lPx / 2, width: wPx, height: lPx, rx: 3, class: 'link-wheel' }));
   } else {
     const wPx = 0.18 * scale, hPx = 2 * r * scale;
     svg.append(s('g', { transform: `rotate(${-(g.camber || 0)} ${cx} ${cy})` },

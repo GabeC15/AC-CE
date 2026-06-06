@@ -1,16 +1,14 @@
-// aero.js — Aero & Electronics tab: per-wing aerodynamic tuning (aero.ini) and
-// driver-aid settings (electronics.ini). Both are optional; cards self-skip when
-// the underlying section/key is absent.
+// aero.js — Aero tab: per-wing aerodynamic tuning (aero.ini) with interactive
+// CL/CD vs angle-of-attack curves. Cards self-skip when a key is absent.
 import { h } from '../ui/dom.js';
-import { card, boundNumber, boundToggle } from '../ui/controls.js';
+import { card, boundNumber } from '../ui/controls.js';
 import { buildWingCurve } from '../ui/wingcurve.js';
 
 export function renderAero(car, ctx) {
   const aero = car.ini('aero.ini');
-  const elec = car.ini('electronics.ini');
-
   const wingCards = [];
   const curveCards = [];
+
   if (aero) {
     for (const w of aero.indexedSections('WING_')) {
       const name = aero.get(w, 'NAME') || w;
@@ -36,36 +34,14 @@ export function renderAero(car, ctx) {
     }
   }
 
-  const elecCards = [];
-  if (elec) {
-    const systems = [
-      ['TRACTION_CONTROL', 'Traction control'],
-      ['ABS', 'ABS'],
-      ['EDL', 'Electronic diff lock'],
-    ];
-    for (const [section, label] of systems) {
-      if (!elec.has(section)) continue;
-      elecCards.push(card(label, [
-        boundToggle(car, ctx, { file: 'electronics.ini', section, key: 'PRESENT', label: 'Fitted' }),
-        boundToggle(car, ctx, { file: 'electronics.ini', section, key: 'ACTIVE', label: 'Active by default' }),
-        boundNumber(car, ctx, { file: 'electronics.ini', section, key: 'SLIP_RATIO_LIMIT', label: 'Slip limit', min: 0, max: 0.5, step: 0.005 }),
-        boundNumber(car, ctx, { file: 'electronics.ini', section, key: 'RATE_HZ', label: 'Rate', min: 0, max: 500, step: 10, unit: 'Hz' }),
-        boundNumber(car, ctx, { file: 'electronics.ini', section, key: 'MIN_SPEED_KMH', label: 'Min speed', min: 0, max: 100, step: 1, unit: 'km/h' }),
-      ], { keepEmpty: true }));
-    }
-  }
-
-  if (!wingCards.length && !elecCards.length) {
+  if (!wingCards.length) {
     return h('div', { class: 'panel' },
-      h('section', { class: 'card' }, h('p', { class: 'subtle' }, 'This car has no aero.ini or electronics.ini.')));
+      h('section', { class: 'card' }, h('p', { class: 'subtle' }, 'This car has no aero.ini.')));
   }
 
   return h('div', { class: 'panel' },
-    wingCards.length ? h('h2', { class: 'panel-h' }, 'Aerodynamics') : null,
-    wingCards.length ? h('div', { class: 'card-grid' }, wingCards) : null,
-    curveCards.length ? h('div', { class: 'card-grid curve-grid' }, curveCards) : null,
-    elecCards.length ? h('h2', { class: 'panel-h' }, 'Electronics & assists') : null,
-    elecCards.length ? h('div', { class: 'card-grid' }, elecCards) : null);
+    h('div', { class: 'card-grid' }, wingCards),
+    curveCards.length ? h('div', { class: 'card-grid curve-grid' }, curveCards) : null);
 }
 
 function titleCase(s) {

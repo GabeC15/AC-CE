@@ -15,38 +15,45 @@
 
 * { box-sizing: border-box; }
 html, body { height: 100%; margin: 0; }
-body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; }
+body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px;
+  -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-#app { display: flex; flex-direction: column; height: 100vh; }
+#app { display: flex; flex-direction: row; height: 100vh; }
+.sidebar { width: 210px; flex: none; display: flex; flex-direction: column; gap: 8px; padding: 14px 10px; background: var(--bg-2); border-right: 1px solid var(--line); overflow-y: auto; }
+.main { flex: 1; min-width: 0; display: flex; flex-direction: column; height: 100vh; }
 .subtle { color: var(--muted); }
 .small { font-size: 12px; }
 .error { color: var(--accent); }
 
-/* ---- top bar ---- */
-.topbar {
-  display: flex; align-items: center; gap: 18px;
-  padding: 10px 16px; background: var(--bg-2); border-bottom: 1px solid var(--line);
-}
-.brand { display: flex; align-items: center; gap: 10px; min-width: 190px; flex: none; }
+/* ---- sidebar / nav ---- */
+.sidebar .brand { display: flex; align-items: center; gap: 10px; padding: 4px 8px 8px; }
 .logo {
   display: grid; place-items: center; width: 34px; height: 34px; border-radius: 8px;
   background: var(--accent); color: #fff; font-weight: 800; letter-spacing: .5px;
 }
-.title #car-name { font-weight: 700; }
+.brand .title > div:first-child { font-weight: 700; }
 
-.tabbar { display: flex; gap: 4px; flex: 1 1 auto; min-width: 0; overflow-x: auto; }
-.tabbar::-webkit-scrollbar { height: 0; }
+.tabbar { display: flex; flex-direction: column; gap: 2px; }
 .tab {
-  background: transparent; border: 0; color: var(--muted); padding: 8px 14px;
-  border-radius: 8px; cursor: pointer; font-size: 14px; white-space: nowrap; flex: none;
+  background: transparent; border: 0; color: var(--muted); padding: 9px 12px;
+  border-radius: 8px; cursor: pointer; font-size: 14px; text-align: left; width: 100%;
+  transition: background .14s ease, color .14s ease, box-shadow .14s ease;
 }
 .tab:hover { background: var(--bg-3); color: var(--text); }
-.tab.active { background: var(--bg-3); color: var(--text); box-shadow: inset 0 -2px 0 var(--accent); }
+.tab.active { background: var(--bg-3); color: var(--text); box-shadow: inset 3px 0 0 var(--accent); }
+
+/* ---- top bar (in main) ---- */
+.topbar {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  padding: 10px 16px; background: var(--bg-2); border-bottom: 1px solid var(--line);
+}
+.car-id #car-name { font-weight: 700; }
 
 .actions { display: flex; gap: 8px; align-items: center; flex: none; }
 .btn {
   background: var(--bg-3); color: var(--text); border: 1px solid var(--line);
   padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px;
+  transition: background .14s ease, border-color .14s ease, opacity .14s ease;
 }
 .btn:hover:not(:disabled) { border-color: #3b4351; }
 .btn:disabled { opacity: .5; cursor: default; }
@@ -82,6 +89,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 input.text, .field input[type=number], .field input[type=text], textarea {
   background: var(--bg); color: var(--text); border: 1px solid var(--line);
   border-radius: 6px; padding: 6px 8px; font-family: var(--font); font-size: 13px;
+  transition: border-color .14s ease;
 }
 .field.stacked input, .field.stacked textarea { width: 100%; }
 textarea { resize: vertical; }
@@ -132,7 +140,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 .susp-svg { width: 100%; max-width: 640px; height: auto; }
 .susp-body { fill: rgba(255,255,255,0.03); stroke: var(--line); stroke-width: 1; stroke-linejoin: round; }
 .susp-axle { stroke: rgba(255,255,255,0.22); stroke-width: 1.5; }
-.susp-wheel { fill: var(--accent); stroke: #ff8a8a; stroke-width: 1; }
+.susp-wheel { fill: rgba(255,77,77,0.12); stroke: var(--accent); stroke-width: 2; }
 .susp-cg { fill: var(--accent-2); }
 .susp-cg-line { stroke: var(--accent-2); stroke-width: 1.5; }
 .susp-label { fill: var(--text); font-size: 11px; }
@@ -143,6 +151,15 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 .susp-gauge-bg { fill: rgba(255,255,255,0.02); stroke: var(--line); }
 .susp-gauge-title { fill: var(--muted); font-size: 11px; }
 .susp-gauge-val { fill: var(--text); font-size: 12px; font-weight: 600; text-anchor: end; }
+.susp-angle-val { fill: #54a0ff; font-size: 12px; font-weight: 600; text-anchor: end; }
+.susp-camber-wheel { fill: rgba(255,77,77,0.12); stroke: var(--accent); stroke-width: 2.5; }
+.susp-caster-wheel { fill: rgba(255,77,77,0.10); stroke: var(--accent); stroke-width: 4; }
+.susp-caster-rim { fill: none; stroke: rgba(255,255,255,0.22); stroke-width: 1; }
+.susp-caster-axis { stroke: #54a0ff; stroke-width: 2; stroke-linecap: round; }
+.susp-caster-spring { fill: none; stroke: #54a0ff; stroke-width: 1.6; stroke-linejoin: round; }
+.susp-caster-mount { fill: #54a0ff; }
+.susp-vert-ref { stroke: rgba(255,255,255,0.4); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.susp-front-dir { fill: var(--muted); font-size: 10px; }
 .susp-ground { stroke: rgba(255,255,255,0.25); stroke-width: 1.5; stroke-linecap: round; }
 
 /* ---- aero & electronics ---- */
@@ -185,3 +202,15 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 
 /* ---- status bar ---- */
 .statusbar { padding: 6px 16px; background: var(--bg-2); border-top: 1px solid var(--line); }
+
+/* ---- motion & scrollbars ---- */
+@keyframes panel-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+.panel { animation: panel-in 0.18s ease both; }
+.empty { animation: panel-in 0.18s ease both; }
+@media (prefers-reduced-motion: reduce) { .panel, .empty { animation: none; } }
+
+* { scrollbar-width: thin; scrollbar-color: var(--bg-3) transparent; }
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--bg-3); border-radius: 8px; border: 2px solid var(--bg); }
+::-webkit-scrollbar-thumb:hover { background: #3b4351; }

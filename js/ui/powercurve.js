@@ -28,7 +28,8 @@ export function renderPowerCurve(car, ctx) {
     ctx.markChanged();
   });
   requestAnimationFrame(() => controller.layout());
-  new ResizeObserver(() => controller.layout()).observe(canvas);
+  // rAF-defer the redraw so resizing never loops within a frame.
+  new ResizeObserver(() => requestAnimationFrame(() => controller.layout())).observe(canvas);
   return card;
 }
 

@@ -8,35 +8,42 @@
 </head>
 <body>
   <div id="app">
-    <header class="topbar">
+    <aside class="sidebar">
       <div class="brand">
         <span class="logo">AC</span>
         <div class="title">
-          <div id="car-name">Car Editor</div>
-          <div id="car-sub" class="subtle small">no car loaded</div>
+          <div>Car Editor</div>
+          <div class="subtle small">Assetto Corsa</div>
         </div>
       </div>
-
       <nav id="tabbar" class="tabbar"></nav>
+    </aside>
 
-      <div class="actions">
-        <button id="btn-open-folder" class="btn">Open folder</button>
-        <button id="btn-open-upload" class="btn ghost">Open (upload)</button>
-        <label class="backup-toggle" title="Back up the car's original data files to _backups/ before overwriting">
-          <input id="auto-backup" type="checkbox" checked /> Auto-backup
-        </label>
-        <button id="btn-save" class="btn primary" disabled>
-          <span id="dirty-dot" class="dot"></span> Save
-        </button>
-        <input id="upload-input" type="file" webkitdirectory directory multiple hidden />
-      </div>
-    </header>
+    <div class="main">
+      <header class="topbar">
+        <div class="car-id">
+          <div id="car-name">No car loaded</div>
+          <div id="car-sub" class="subtle small">open a car folder to begin</div>
+        </div>
+        <div class="actions">
+          <button id="btn-open-folder" class="btn">Open folder</button>
+          <button id="btn-open-upload" class="btn ghost">Open (upload)</button>
+          <label class="backup-toggle" title="Back up the car's original data files to _backups/ before overwriting">
+            <input id="auto-backup" type="checkbox" checked /> Auto-backup
+          </label>
+          <button id="btn-save" class="btn primary" disabled>
+            <span id="dirty-dot" class="dot"></span> Save
+          </button>
+          <input id="upload-input" type="file" webkitdirectory directory multiple hidden />
+        </div>
+      </header>
 
-    <main id="content" class="content"></main>
+      <main id="content" class="content"></main>
 
-    <footer class="statusbar">
-      <span id="status" class="subtle small"></span>
-    </footer>
+      <footer class="statusbar">
+        <span id="status" class="subtle small"></span>
+      </footer>
+    </div>
   </div>
 
   <script type="module" src="js/app.js"></script>

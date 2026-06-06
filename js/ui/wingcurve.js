@@ -31,7 +31,8 @@ export function buildWingCurve(car, ctx, { label, clName, cdName, clGain, cdGain
     ctx.markChanged();
   });
   requestAnimationFrame(() => ctrl.layout());
-  new ResizeObserver(() => ctrl.layout()).observe(canvas);
+  // rAF-defer the redraw so resizing never loops within a frame.
+  new ResizeObserver(() => requestAnimationFrame(() => ctrl.layout())).observe(canvas);
   return card;
 }
 
