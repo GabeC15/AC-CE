@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "ACCE dev server (Node)",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["tools/serve.mjs", "8000"],
+      "port": 8000
+    },
+    {
+      "name": "Static server (Python)",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8000"],
+      "port": 8000
+    }
+  ]
+}
