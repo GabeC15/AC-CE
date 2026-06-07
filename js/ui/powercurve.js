@@ -188,10 +188,9 @@ class CurveController {
   layout() {
     const dpr = window.devicePixelRatio || 1;
     this.W = this.canvas.clientWidth || 600;
-    this.H = 240;
+    this.H = this.canvas.clientHeight || 240;   // height set by CSS so the chart fills its card
     this.canvas.width = this.W * dpr;
     this.canvas.height = this.H * dpr;
-    this.canvas.style.height = this.H + 'px';
     this.g = this.canvas.getContext('2d');
     this.g.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.draw();

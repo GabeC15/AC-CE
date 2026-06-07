@@ -20,7 +20,7 @@ export function buildWingCurve(car, ctx, { label, clName, cdName, clGain, cdGain
 
   const canvas = h('canvas', { class: 'curve wing-canvas' });
   const meta = h('div', { class: 'curve-meta' });
-  const card = h('section', { class: 'card' },
+  const card = h('section', { class: 'card curve-card' },
     h('h3', {}, `${label} — CL / CD vs AoA`,
       series.map((s) => h('span', { class: 'legend', style: { color: s.color, marginLeft: '12px' } },
         `■ ${s.key}${s.key === 'CL' ? ` ×${clGain ?? 1}` : ` ×${cdGain ?? 1}`}`))),
@@ -64,10 +64,9 @@ class WingController {
   layout() {
     const dpr = DPR();
     this.W = this.canvas.clientWidth || 600;
-    this.H = 220;
+    this.H = this.canvas.clientHeight || 220;   // height set by CSS so the graph fills its card
     this.canvas.width = this.W * dpr;
     this.canvas.height = this.H * dpr;
-    this.canvas.style.height = this.H + 'px';
     this.g = this.canvas.getContext('2d');
     this.g.setTransform(dpr, 0, 0, dpr, 0, 0);
     this.draw();

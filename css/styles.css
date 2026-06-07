@@ -75,7 +75,7 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 /* ---- cards ---- */
 .card { background: var(--bg-2); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
 .card h3 { margin: 0 0 12px; font-size: 13px; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); }
-.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; align-items: start; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 16px; align-items: stretch; }
 .card-body { display: flex; flex-direction: column; gap: 12px; }
 
 /* ---- fields ---- */
@@ -110,6 +110,15 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 .legend.torque { color: #ff9f43; }
 .legend.power { color: #54a0ff; }
 .card-grid.curve-grid { grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+/* graph cards (power curve, wing CL/CD, and any future chart) fill their card's
+   height, so a chart lines up with a paired settings card and the look stays
+   consistent whether the card stands alone or sits in an equal-height row. */
+.curve-card { display: flex; flex-direction: column; min-height: 330px; }
+.curve-card .curve { flex: 1 1 0; min-height: 0; }
+/* aero: pair each wing's settings card with its own CL/CD graph, equal heights */
+.aero-wing { display: grid; grid-template-columns: minmax(300px, 360px) minmax(0, 1fr); gap: 16px; align-items: stretch; }
+.aero-wing.solo { grid-template-columns: minmax(300px, 420px); }
+@media (max-width: 760px) { .aero-wing { grid-template-columns: 1fr; } }
 .curve-toggles { display: flex; gap: 8px; align-items: center; }
 .curve { width: 100%; display: block; cursor: grab; touch-action: none; }
 .curve.grabbing { cursor: grabbing; }
