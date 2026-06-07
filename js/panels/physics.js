@@ -56,11 +56,16 @@ export function renderPhysics(car, ctx) {
 function renderGears(car, ctx) {
   const ini = car.ini('drivetrain.ini');
   if (!ini || !ini.has('GEARS')) return null;
-  const fields = ini.keys('GEARS').map((key) => boundNumber(car, ctx, {
-    file: 'drivetrain.ini', section: 'GEARS', key,
-    label: key.replace('GEAR_', 'Gear ').replace('_', ' '),
-    min: key === 'COUNT' ? 1 : 0, max: key === 'COUNT' ? 8 : 7, step: key === 'COUNT' ? 1 : 0.001,
-  }));
+  const fields = ini.keys('GEARS').map((key) => {
+    const spec = key === 'COUNT' ? { min: 1, max: 10, step: 1 }
+      : key === 'GEAR_R' ? { min: -7, max: 0, step: 0.001 }   // reverse ratio is negative
+      : { min: 0, max: 7, step: 0.001 };
+    return boundNumber(car, ctx, {
+      file: 'drivetrain.ini', section: 'GEARS', key,
+      label: key.replace('GEAR_', 'Gear ').replace('_', ' '),
+      ...spec,
+    });
+  });
   return card('Gear ratios', fields);
 }
 
