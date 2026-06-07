@@ -111,7 +111,7 @@ export function renderSuspension(car, ctx) {
     h('section', { class: 'card susp-card' },
       h('h3', {}, 'Geometry reference'),
       diagramHost,
-      h('div', { class: 'subtle small' }, 'Wheel tilts are exaggerated for clarity. Camber shown is the estimated loaded value (static + camber-gain × compression under corner weight); ≈±0.5° — in-game also depends on setup ride height.')),
+      h('div', { class: 'subtle small' }, 'Shows the car’s default setup (values come from the data files; a custom in-game setup reads differently). Camber is the estimated loaded value — default static + camber-gain × compression, ≈±0.5°. Wheel tilts exaggerated for clarity.')),
     linkageCard,
     h('div', { class: 'card-grid' }, [alignment, springs, dampers, bumpstops].filter(Boolean)));
 }
