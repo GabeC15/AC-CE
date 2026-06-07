@@ -68,7 +68,7 @@ export function buildLinkage(g) {
   const stats = h2('div', 'link-stats',
     readout('Type', g.type),
     kpi != null ? readout('KPI', `${f1(kpi)}°`) : null,
-    g.rodLength != null ? readout('Rod length', `${g.rodLength} m`) : null,
+    g.rodLength != null ? readout('Ride height', `${Math.round(g.rodLength * 1000)} mm`) : null,
     readout('Wheel Ø', `${(g.wheelRadius * 2).toFixed(2)} m`));
 
   return h2('div', 'linkage',

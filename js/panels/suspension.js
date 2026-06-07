@@ -24,8 +24,8 @@ export function renderSuspension(car, ctx) {
     const ra = readAxleGeom(ini, tyres, 'REAR');
     geom.frontCaster = fa ? casterKpi(fa.pts, fa.type).caster : null;
     geom.rearCaster = ra ? casterKpi(ra.pts, ra.type).caster : null;
-    if (fa) { geom.frontRadius = fa.wheelRadius; geom.frontWidth = fa.wheelWidth; }
-    if (ra) { geom.rearRadius = ra.wheelRadius; geom.rearWidth = ra.wheelWidth; }
+    if (fa) { geom.frontRadius = fa.wheelRadius; geom.frontWidth = fa.wheelWidth; geom.frontRide = fa.rodLength != null ? fa.rodLength * 1000 : null; }
+    if (ra) { geom.rearRadius = ra.wheelRadius; geom.rearWidth = ra.wheelWidth; geom.rearRide = ra.rodLength != null ? ra.rodLength * 1000 : null; }
     // estimated loaded camber = static + camber-gain x compression under corner weight
     if (totalMass) {
       const fl = fa && loadedCamber(fa, totalMass * geom.cg / 2);

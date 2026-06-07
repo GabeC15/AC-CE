@@ -30,8 +30,8 @@ export function buildSuspensionDiagram(g) {
   drawTopDown(svg, g);
   drawCamberGauge(svg, 290, 36, 'Front', { stat: g.frontCamber, loaded: g.frontLoaded, gain: g.frontGain });
   drawCamberGauge(svg, 290, 168, 'Rear', { stat: g.rearCamber, loaded: g.rearLoaded, gain: g.rearGain });
-  drawCasterGauge(svg, 466, 36, 'Front', g.frontCaster);
-  drawCasterGauge(svg, 466, 168, 'Rear', g.rearCaster);
+  drawCasterGauge(svg, 466, 36, 'Front', g.frontCaster, g.frontRide);
+  drawCasterGauge(svg, 466, 168, 'Rear', g.rearCaster, g.rearRide);
 
   return svg;
 }
@@ -89,6 +89,11 @@ function drawTopDown(svg, g) {
   dim(svg, cx - hf, frontY - fR * scale - 11, cx + hf, frontY - fR * scale - 11, 'h', `${f2(g.frontTrack)} m`);
   dim(svg, cx - hr, rearY + rR * scale + 11, cx + hr, rearY + rR * scale + 11, 'h', `${f2(g.rearTrack)} m`);
 
+  // toe readouts beside each axle (degrees; + = toe-out, − = toe-in)
+  const toeStr = (t) => { const d = Math.atan(t || 0) * 180 / Math.PI; return `toe ${d >= 0 ? '+' : ''}${f2(d)}°`; };
+  svg.append(s('text', { x: 286, y: frontY + 3, class: 'susp-toe-label' }, toeStr(g.frontToe)));
+  svg.append(s('text', { x: 286, y: rearY + 3, class: 'susp-toe-label' }, toeStr(g.rearToe)));
+
   svg.append(s('text', { x: cx, y: 14, class: 'susp-title' }, 'Top view'));
   svg.append(s('text', { x: cx, y: 28, class: 'susp-sub' }, `${g.type} front · ${g.rearType} rear`));
 }
@@ -122,7 +127,7 @@ function drawCamberGauge(svg, x0, y0, label, info) {
 
 // side-view caster gauge: wheel + true-vertical reference + tilted coilover/steering axis.
 // Front of the vehicle is to the left, so positive caster leans the strut top rearward (right).
-function drawCasterGauge(svg, x0, y0, label, caster) {
+function drawCasterGauge(svg, x0, y0, label, caster, rideMm) {
   const w = 164, h = 120;
   svg.append(s('rect', { x: x0, y: y0, width: w, height: h, rx: 8, class: 'susp-gauge-bg' }));
   svg.append(s('text', { x: x0 + 12, y: y0 + 20, class: 'susp-gauge-title' }, `${label} caster`));
@@ -148,6 +153,7 @@ function drawCasterGauge(svg, x0, y0, label, caster) {
   svg.append(strut);
 
   svg.append(s('text', { x: x0 + 12, y: y0 + h - 8, class: 'susp-front-dir' }, '← front'));
+  if (rideMm != null) svg.append(s('text', { x: x0 + w - 12, y: y0 + h - 8, class: 'susp-ride-label' }, `ride ${Math.round(rideMm)} mm`));
 }
 
 function camberWheel(svg, x, groundY, angleDeg) {

@@ -148,6 +148,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 .susp-sub { fill: var(--muted); font-size: 10px; text-anchor: middle; }
 .susp-dim { stroke: rgba(255,255,255,0.28); stroke-width: 1; }
 .susp-dim-label { fill: var(--muted); font-size: 10px; text-anchor: middle; }
+.susp-toe-label { fill: var(--muted); font-size: 9px; text-anchor: end; }
 .susp-gauge-bg { fill: rgba(255,255,255,0.02); stroke: var(--line); }
 .susp-gauge-title { fill: var(--muted); font-size: 11px; }
 .susp-gauge-val { fill: var(--text); font-size: 12px; font-weight: 600; text-anchor: end; }
@@ -161,6 +162,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 .susp-caster-mount { fill: #54a0ff; }
 .susp-vert-ref { stroke: rgba(255,255,255,0.4); stroke-width: 1.5; stroke-dasharray: 3 3; }
 .susp-front-dir { fill: var(--muted); font-size: 10px; }
+.susp-ride-label { fill: var(--muted); font-size: 10px; text-anchor: end; }
 .susp-ground { stroke: rgba(255,255,255,0.25); stroke-width: 1.5; stroke-linecap: round; }
 
 /* ---- aero & electronics ---- */
