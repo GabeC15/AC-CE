@@ -195,6 +195,12 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 .seg-btn { background: transparent; border: 0; color: var(--muted); padding: 4px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
 .seg-btn.active { background: var(--bg-3); color: var(--text); }
 .tyre-compound-bar { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+/* standard tyre-size control: width / aspect / rim, e.g. 275 / 38 / 18 */
+.tyre-size-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.field.tyre-size-field .tyre-size-row input { width: 54px; text-align: center; }
+.tyre-size-row .sep { color: var(--muted); }
+.tyre-size-row .rim-r { margin-right: -4px; padding-left: 2px; }
+.tyre-size-row .tyre-od { margin-left: auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
 .small-btn { padding: 4px 10px; font-size: 12px; }
 .linkage-views { display: flex; gap: 16px; flex-wrap: wrap; justify-content: center; }
 .linkage-fig { margin: 0; flex: 1 1 260px; max-width: 330px; text-align: center; }
