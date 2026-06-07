@@ -5,6 +5,7 @@ import { h, clear } from '../ui/dom.js';
 import { card, boundNumber } from '../ui/controls.js';
 import { buildSuspensionDiagram } from '../ui/suspensiondiagram.js';
 import { buildLinkage, casterKpi } from '../ui/suspensionlinkage.js';
+import { loadedCamber } from '../core/suspensionmath.js';
 
 export function renderSuspension(car, ctx) {
   const ini = car.ini('suspensions.ini');
@@ -14,6 +15,8 @@ export function renderSuspension(car, ctx) {
   }
 
   const tyres = car.ini('tyres.ini');
+  const carIni = car.ini('car.ini');
+  const totalMass = carIni && carIni.has('BASIC', 'TOTALMASS') ? carIni.getNumber('BASIC', 'TOTALMASS') : null;
   const diagramHost = h('div', { class: 'susp-diagram' });
   const refresh = () => {
     const geom = readGeom(ini);
@@ -23,6 +26,13 @@ export function renderSuspension(car, ctx) {
     geom.rearCaster = ra ? casterKpi(ra.pts, ra.type).caster : null;
     if (fa) { geom.frontRadius = fa.wheelRadius; geom.frontWidth = fa.wheelWidth; }
     if (ra) { geom.rearRadius = ra.wheelRadius; geom.rearWidth = ra.wheelWidth; }
+    // estimated loaded camber = static + camber-gain x compression under corner weight
+    if (totalMass) {
+      const fl = fa && loadedCamber(fa, totalMass * geom.cg / 2);
+      const rl = ra && loadedCamber(ra, totalMass * (1 - geom.cg) / 2);
+      if (fl) { geom.frontLoaded = fl.loaded; geom.frontGain = fl.gainPerCm; }
+      if (rl) { geom.rearLoaded = rl.loaded; geom.rearGain = rl.gainPerCm; }
+    }
     clear(diagramHost);
     diagramHost.append(buildSuspensionDiagram(geom));
   };
@@ -101,7 +111,7 @@ export function renderSuspension(car, ctx) {
     h('section', { class: 'card susp-card' },
       h('h3', {}, 'Geometry reference'),
       diagramHost,
-      h('div', { class: 'subtle small' }, 'Camber & toe angles are exaggerated for clarity; printed values are exact.')),
+      h('div', { class: 'subtle small' }, 'Wheel tilts are exaggerated for clarity. Camber shown is the estimated loaded value (static + camber-gain × compression under corner weight); ≈±0.5° — in-game also depends on setup ride height.')),
     linkageCard,
     h('div', { class: 'card-grid' }, [alignment, springs, dampers, bumpstops].filter(Boolean)));
 }
@@ -118,6 +128,9 @@ function readAxleGeom(ini, tyres, axle) {
     track: ini.getNumber(axle, 'TRACK'),
     rodLength: ini.has(axle, 'ROD_LENGTH') ? ini.getNumber(axle, 'ROD_LENGTH') : null,
     camber: ini.getNumber(axle, 'STATIC_CAMBER') || 0,
+    staticCamber: ini.getNumber(axle, 'STATIC_CAMBER') || 0,
+    springRate: ini.has(axle, 'SPRING_RATE') ? ini.getNumber(axle, 'SPRING_RATE') : null,
+    hubMass: ini.has(axle, 'HUB_MASS') ? ini.getNumber(axle, 'HUB_MASS') : 0,
     wheelRadius: tyres && tyres.has(axle, 'RADIUS') ? tyres.getNumber(axle, 'RADIUS') : 0.3,
     wheelWidth: tyres && tyres.has(axle, 'WIDTH') ? tyres.getNumber(axle, 'WIDTH') : 0.2,
     pts: {

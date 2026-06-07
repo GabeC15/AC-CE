@@ -28,8 +28,8 @@ export function buildSuspensionDiagram(g) {
   const svg = s('svg', { viewBox: '0 0 640 300', class: 'susp-svg', preserveAspectRatio: 'xMidYMid meet' });
 
   drawTopDown(svg, g);
-  drawCamberGauge(svg, 290, 36, 'Front', g.frontCamber);
-  drawCamberGauge(svg, 290, 168, 'Rear', g.rearCamber);
+  drawCamberGauge(svg, 290, 36, 'Front', { stat: g.frontCamber, loaded: g.frontLoaded, gain: g.frontGain });
+  drawCamberGauge(svg, 290, 168, 'Rear', { stat: g.rearCamber, loaded: g.rearLoaded, gain: g.rearGain });
   drawCasterGauge(svg, 466, 36, 'Front', g.frontCaster);
   drawCasterGauge(svg, 466, 168, 'Rear', g.rearCaster);
 
@@ -99,18 +99,25 @@ function wheel(svg, x, y, angleDeg, wPx, hPx) {
 }
 
 // front-view camber gauge: a pair of wheels tilted by camber (exaggerated)
-function drawCamberGauge(svg, x0, y0, label, camber) {
+function drawCamberGauge(svg, x0, y0, label, info) {
   const w = 164, h = 120;
-  const groundY = y0 + h - 28;
+  const groundY = y0 + h - 30;
   const cxL = x0 + 50, cxR = x0 + w - 50;
+  const stat = info.stat;
+  const shown = info.loaded != null ? info.loaded : stat;   // show loaded when we have it
   svg.append(s('rect', { x: x0, y: y0, width: w, height: h, rx: 8, class: 'susp-gauge-bg' }));
   svg.append(s('text', { x: x0 + 12, y: y0 + 20, class: 'susp-gauge-title' }, `${label} camber`));
-  svg.append(s('text', { x: x0 + w - 12, y: y0 + 20, class: 'susp-angle-val' }, `${f2(camber)}°`));
+  svg.append(s('text', { x: x0 + w - 12, y: y0 + 20, class: 'susp-angle-val' }, `${f2(shown)}°`));
   svg.append(s('line', { x1: x0 + 14, y1: groundY, x2: x0 + w - 14, y2: groundY, class: 'susp-ground' }));
 
-  const ex = Math.max(-20, Math.min(20, camber * 4));
+  const ex = Math.max(-20, Math.min(20, shown * 4));
   camberWheel(svg, cxL, groundY, -ex);   // left wheel
   camberWheel(svg, cxR, groundY, ex);    // right wheel
+
+  if (info.loaded != null) {
+    const gainTxt = info.gain != null ? ` · ${f2(info.gain)}°/cm` : '';
+    svg.append(s('text', { x: x0 + 12, y: y0 + h - 7, class: 'susp-gauge-sub' }, `loaded · setup ${f2(stat)}°${gainTxt}`));
+  }
 }
 
 // side-view caster gauge: wheel + true-vertical reference + tilted coilover/steering axis.

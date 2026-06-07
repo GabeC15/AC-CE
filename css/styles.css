@@ -152,6 +152,7 @@ input:focus, textarea:focus { outline: none; border-color: var(--accent-2); }
 .susp-gauge-title { fill: var(--muted); font-size: 11px; }
 .susp-gauge-val { fill: var(--text); font-size: 12px; font-weight: 600; text-anchor: end; }
 .susp-angle-val { fill: #54a0ff; font-size: 12px; font-weight: 600; text-anchor: end; }
+.susp-gauge-sub { fill: var(--muted); font-size: 9px; }
 .susp-camber-wheel { fill: rgba(255,77,77,0.12); stroke: var(--accent); stroke-width: 2.5; }
 .susp-caster-wheel { fill: rgba(255,77,77,0.10); stroke: var(--accent); stroke-width: 4; }
 .susp-caster-rim { fill: none; stroke: rgba(255,255,255,0.22); stroke-width: 1; }
