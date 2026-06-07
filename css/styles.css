@@ -83,9 +83,9 @@ body { background: var(--bg); color: var(--text); font-family: var(--font); font
 .field.stacked { grid-template-columns: 1fr; gap: 6px; }
 .field label { color: var(--muted); }
 .field .unit { color: #6f7a87; }
-.field-inputs { display: flex; align-items: center; gap: 10px; }
-.field-inputs input[type=range] { flex: 1; accent-color: var(--accent); }
-.field-inputs input.num { width: 88px; }
+.field-inputs { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.field-inputs input[type=range] { flex: 1; min-width: 0; accent-color: var(--accent); }
+.field-inputs input.num { width: 88px; flex: none; }
 input.text, .field input[type=number], .field input[type=text], textarea {
   background: var(--bg); color: var(--text); border: 1px solid var(--line);
   border-radius: 6px; padding: 6px 8px; font-family: var(--font); font-size: 13px;
